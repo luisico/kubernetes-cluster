@@ -1,0 +1,42 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: secure-master-nodes
+spec:
+  selector: has(node-role.kubernetes.io/control-plane)
+  ingress:
+
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: !has(node-role.kubernetes.io/worker)
+    destination:
+      ports:
+      - 22
+
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: !has(node-role.kubernetes.io/worker)
+    destination:
+      ports:
+      - 6443
+      - 6444
+
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: has(node-role.kubernetes.io/control-plane)
+    destination:
+      ports:
+      - 2379
+      - 2380
+
+  - action: Allow
+    protocol: ICMP
+
+  - action: Allow
+    protocol: 112
+    source:
+      selector: has(node-role.kubernetes.io/control-plane)

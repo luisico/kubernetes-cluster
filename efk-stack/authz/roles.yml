@@ -1,0 +1,25 @@
+---
+fluent_writer:
+  cluster:
+    - manage_index_templates
+    - monitor
+    - manage_ilm
+  indices:
+    - names: ["*"]
+      privileges:
+        - write
+        - create
+        - delete
+        - create_index
+        - manage
+        - manage_ilm
+metrics_scraper:
+  cluster:
+    - cluster:monitor/prometheus/metrics
+    - cluster:monitor/health
+    - cluster:monitor/nodes/stats
+    - cluster:monitor/state
+  indices:
+    - names: ["*"]
+      privileges:
+        - indices:monitor/stats

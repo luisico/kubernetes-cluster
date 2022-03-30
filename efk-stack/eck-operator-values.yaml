@@ -1,0 +1,5 @@
+---
+config:
+  metricsPort: 9501
+podMonitor:
+  enabled: true

@@ -1,0 +1,15 @@
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: mycluster
+  namespace: log-system
+spec:
+  version: 7.17.0
+  count: 1
+  elasticsearchRef:
+    name: mycluster
+  config:
+    csp.strict: true
+    telemetry.optIn: false
+    telemetry.enabled: false

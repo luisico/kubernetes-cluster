@@ -1,0 +1,25 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: le-staging
+spec:
+  acme:
+    email: myemail@mydomain
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: le-staging-issuer-account-key
+    solvers:
+    - dns01:
+        webhook:
+          groupName: acme.mycluster.mydomain
+          solverName: infoblox-wapi
+          config:
+            host: myinfobloxhost
+            view: DNS
+            usernameSecretRef:
+              name: infoblox-credentials
+              key: username
+            passwordSecretRef:
+              name: infoblox-credentials
+              key: password

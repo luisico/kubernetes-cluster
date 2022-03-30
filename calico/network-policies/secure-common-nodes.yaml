@@ -1,0 +1,32 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: secure-all-nodes
+spec:
+  selector: has(kubernetes.io/hostname)
+  ingress:
+
+  - action: Allow
+    destination:
+      nets:
+      - 127.0.0.0/8
+
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: has(kubernetes.io/hostname)
+    destination:
+      ports:
+      - 10257
+      - 10259
+      # metrics
+      - 10250  # kubelet
+      - 9100   # node-exporter
+      - 9091   # calico
+
+  - action: Allow
+    protocol: UDP
+    destination:
+      ports:
+      - 53

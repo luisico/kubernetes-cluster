@@ -1,0 +1,28 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: mycluster-ingress
+  namespace: istio-gateways
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-mycluster
+      protocol: HTTP
+    hosts:
+    - "*"
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https-mycluster
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      minProtocolVersion: TLSV1_2
+      credentialName: mycluster-ingress-cert-tls
+    hosts:
+    - "*"

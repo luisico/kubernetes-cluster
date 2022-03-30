@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: istio-gateways
+
+---
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: gateways
+spec:
+  profile: empty
+  hub: gcr.io/istio-release
+  components:
+    ingressGateways:
+    - name: istio-ingressgateway
+      namespace: istio-gateways
+      enabled: true
+      label:
+        istio: ingressgateway
+      k8s:
+        overlays:
+          # Deploy IngressGateway as DaemonSet on control-plane binding to
+          # ports 80 and 443.See https://github.com/istio/istio/issues/27666
+          # and https://github.com/istio/istio/issues/6706
+        - apiVersion: apps/v1
+          kind: Deployment
+          name: istio-ingressgateway
+          patches:
+          - path: kind
+            value: DaemonSet
+          - path: spec.strategy
+          - path: spec.updateStrategy
+            value:
+              rollingUpdate:
+                maxUnavailable: 33%
+              type: RollingUpdate
+          - path: spec.template.spec.containers.[name:istio-proxy].ports.[containerPort:8080].hostPort
+            value: 80
+          - path: spec.template.spec.containers.[name:istio-proxy].ports.[containerPort:8443].hostPort
+            value: 443
+  values:
+    gateways:
+      istio-ingressgateway:
+        injectionTemplate: gateway
+        autoscaleEnabled: false
+        nodeSelector:
+          node-role.kubernetes.io/control-plane: ""
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane

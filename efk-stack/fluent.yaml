@@ -1,0 +1,19 @@
+---
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: Logging
+metadata:
+  name: mycluster
+  namespace: log-system
+spec:
+  fluentd:
+    disablePvc: true
+    metrics:
+      serviceMonitor: true
+  fluentbit:
+    tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    metrics:
+      serviceMonitor: true
+  controlNamespace: log-system

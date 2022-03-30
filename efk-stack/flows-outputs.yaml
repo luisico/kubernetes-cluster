@@ -1,0 +1,41 @@
+---
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: ClusterOutput
+metadata:
+  name: mycluster-cluster-output
+  namespace: log-system
+spec:
+  elasticsearch:
+    host: mycluster-es-http
+    port: 9200
+    scheme: https
+    ssl_verify: false
+    ssl_version: TLSv1_2
+    logstash_format: true
+    suppress_type_name: true
+    user: fluent
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: mycluster-es-users
+          key: fluent.password
+    buffer:
+      timekey: 1m
+      timekey_wait: 30s
+      timekey_use_utc: true
+
+---
+apiVersion: logging.banzaicloud.io/v1beta1
+kind: ClusterFlow
+metadata:
+  name: mycluster-cluster-flow
+  namespace: log-system
+spec:
+  filters:
+  - dedot:
+      de_dot_separator: '_'
+      de_dot_nested: true
+  match:
+  - select: {}
+  globalOutputRefs:
+  - mycluster-cluster-output

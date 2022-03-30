@@ -1,0 +1,73 @@
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: mycluster
+  namespace: log-system
+spec:
+  version: 7.17.0
+  auth:
+    roles:
+    - secretName: mycluster-es-roles
+    fileRealm:
+    - secretName: mycluster-es-users-filerealm
+  nodeSets:
+  - name: default
+    count: 1
+    config:
+      node.master: true
+      node.data: true
+      node.ingest: true
+    podTemplate:
+      spec:
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        - name: install-plugins
+          command: ['sh', '-c', 'bin/elasticsearch-plugin install --batch https://github.com/vvanholl/elasticsearch-prometheus-exporter/releases/download/7.17.0.0/prometheus-exporter-7.17.0.0.zip']
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        storageClassName: openebs-cstor-3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mycluster-elasticsearch
+  namespace: log-system
+  labels:
+    monitoring: elasticsearch
+    release: metrics
+spec:
+  selector:
+    matchExpressions:
+    - key: elasticsearch.k8s.elastic.co/statefulset-name
+      operator: DoesNotExist
+    matchLabels:
+      common.k8s.elastic.co/type: elasticsearch
+      elasticsearch.k8s.elastic.co/cluster-name: mycluster
+  endpoints:
+  - scheme: https
+    port: https
+    path: /_prometheus/metrics
+    basicAuth:
+      username:
+        name: mycluster-es-users
+        key: metrics.username
+      password:
+        name: mycluster-es-users
+        key: metrics.password
+    tlsConfig:
+      insecureSkipVerify: true
+  namespaceSelector:
+    matchNames:
+    - log-system

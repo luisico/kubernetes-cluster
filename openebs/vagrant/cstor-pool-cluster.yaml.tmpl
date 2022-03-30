@@ -1,0 +1,34 @@
+---
+apiVersion: cstor.openebs.io/v1
+kind: CStorPoolCluster
+metadata:
+ name: cstor-disk-pool
+ namespace: openebs
+spec:
+ pools:
+   - nodeSelector:
+       kubernetes.io/hostname: storage01.private.test
+     dataRaidGroups:
+       - blockDevices:
+           - blockDeviceName: blockdevice-01
+     poolConfig:
+       dataRaidGroupType: stripe
+       compression: lz4
+
+   - nodeSelector:
+       kubernetes.io/hostname: storage02.private.test
+     dataRaidGroups:
+       - blockDevices:
+           - blockDeviceName: blockdevice-02
+     poolConfig:
+       dataRaidGroupType: stripe
+       compression: lz4
+
+   - nodeSelector:
+       kubernetes.io/hostname: storage03.private.test
+     dataRaidGroups:
+       - blockDevices:
+           - blockDeviceName: blockdevice-03
+     poolConfig:
+       dataRaidGroupType: stripe
+       compression: lz4

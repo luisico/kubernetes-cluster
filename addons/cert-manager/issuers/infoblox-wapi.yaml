@@ -1,0 +1,31 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: webhook-infoblox-wapi:secret-reader
+  namespace: cert-manager
+rules:
+  - apiGroups: [""]
+    resources:
+      - secrets
+    resourceNames:
+      - infoblox-credentials
+    verbs:
+      - get
+      - watch
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: webhook-infoblox-wapi:secret-reader
+  namespace: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: webhook-infoblox-wapi:secret-reader
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: webhook-infoblox-wapi
+    namespace: cert-manager

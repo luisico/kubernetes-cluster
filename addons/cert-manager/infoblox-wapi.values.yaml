@@ -1,0 +1,3 @@
+---
+groupName: acme.mycluster.mydomain
+nameOverride: webhook-infoblox-wapi

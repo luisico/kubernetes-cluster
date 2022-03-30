@@ -1,0 +1,15 @@
+---
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: control-plane
+spec:
+  profile: minimal
+  hub: gcr.io/istio-release
+  meshConfig:
+    accessLogFile: /dev/stdout
+    accessLogEncoding: JSON
+  components:
+    cni:
+      enabled: true

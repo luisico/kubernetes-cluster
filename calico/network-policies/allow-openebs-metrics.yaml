@@ -1,0 +1,16 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-openebs-lvm-node-metrics
+spec:
+  selector: has(node-role.kubernetes.io/storage)
+  ingress:
+
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: has(kubernetes.io/hostname)
+    destination:
+      ports:
+      - 9500

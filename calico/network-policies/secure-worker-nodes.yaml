@@ -1,0 +1,21 @@
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: secure-worker-nodes
+spec:
+  selector: has(node-role.kubernetes.io/worker)
+  ingress:
+
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: has(node-role.kubernetes.io/control-plane)
+    destination:
+      ports:
+      - 22
+
+  - action: Allow
+    protocol: ICMP
+    source:
+      selector: has(kubernetes.io/hostname)

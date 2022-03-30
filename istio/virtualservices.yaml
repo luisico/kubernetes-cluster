@@ -1,0 +1,17 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kiali-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - kiali.mycluster.mydomain
+  gateways:
+  - istio-gateways/mycluster-ingress
+  http:
+  - route:
+    - destination:
+        host: kiali
+        port:
+          number: 20001

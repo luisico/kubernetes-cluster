@@ -1,0 +1,13 @@
+tmp
+
+/istio/src
+
+/openebs/vagrant/cstor-pool-cluster.yaml
+
+/prometheus/vendor
+/prometheus/manifests
+/prometheus/dashboards
+/prometheus/secrets.json
+
+/efk-stack/authz/users
+/efk-stack/authz/secrets

@@ -1,0 +1,105 @@
+---
+x-analytics: &analytics
+  analytics:
+    enabled: false
+
+x-registry: &registry
+  image:
+    registry: quay.io/
+
+<<: *analytics
+
+image:
+  repository: quay.io/
+
+# Use openebs as dependency charts
+
+ndm:
+  enabled: false
+
+openebs-ndm:
+  enabled: true
+  ndm:
+    <<: *registry
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+  ndmOperator:
+    <<: *registry
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+  helperPod:
+    <<: *registry
+  ndmExporter:
+    enabled: true
+    <<: *registry
+
+localprovisioner:
+  enabled: false
+
+localpv-provisioner:
+  enabled: false
+
+jiva:
+  enabled: false
+
+cstor:
+  enabled: true
+  <<: *analytics
+  cspcOperator:
+    poolManager:
+      <<: *registry
+    cstorPool:
+      <<: *registry
+    cstorPoolExporter:
+      <<: *registry
+    <<: *registry
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+  cvcOperator:
+    target:
+      <<: *registry
+    volumeMgmt:
+      <<: *registry
+    volumeExporter:
+      <<: *registry
+    <<: *registry
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+  csiController:
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+  cstorCSIPlugin:
+    <<: *registry
+  admissionServer:
+    <<: *registry
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+
+zfs-localpv:
+  enabled: false
+
+lvm-localpv:
+  enabled: true
+  <<: *analytics
+  lvmNode:
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+  lvmController:
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+  lvmPlugin:
+    <<: *registry
+
+nfs-provisioner:
+  enabled: true
+  <<: *analytics
+  nfsProvisioner:
+    <<: *registry
+    nfsServerAlpineImage:
+      registry: quay.io/
+    nodeSelector:
+      node-role.kubernetes.io/storage: ""
+    nfsServerNodeAffinity: "node-role.kubernetes.io/storage:"
+  nfsStorageClass:
+    name: openebs-nfs-3
+    backendStorageClass: openebs-cstor-3
